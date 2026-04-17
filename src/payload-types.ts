@@ -73,6 +73,7 @@ export interface Config {
     products: Product;
     authors: Author;
     publishers: Publisher;
+    orders: Order;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -86,6 +87,7 @@ export interface Config {
     products: ProductsSelect<false> | ProductsSelect<true>;
     authors: AuthorsSelect<false> | AuthorsSelect<true>;
     publishers: PublishersSelect<false> | PublishersSelect<true>;
+    orders: OrdersSelect<false> | OrdersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -220,6 +222,27 @@ export interface Publisher {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders".
+ */
+export interface Order {
+  id: number;
+  user: number | User;
+  status?: ('pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled') | null;
+  paymentMethod: 'card' | 'cash';
+  total?: number | null;
+  shippingAddress: string;
+  phone: string;
+  items: {
+    product: number | Product;
+    quantity: number;
+    price: number;
+    id?: string | null;
+  }[];
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -265,6 +288,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'publishers';
         value: number | Publisher;
+      } | null)
+    | ({
+        relationTo: 'orders';
+        value: number | Order;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -390,6 +417,28 @@ export interface AuthorsSelect<T extends boolean = true> {
 export interface PublishersSelect<T extends boolean = true> {
   name?: T;
   logo?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders_select".
+ */
+export interface OrdersSelect<T extends boolean = true> {
+  user?: T;
+  status?: T;
+  paymentMethod?: T;
+  total?: T;
+  shippingAddress?: T;
+  phone?: T;
+  items?:
+    | T
+    | {
+        product?: T;
+        quantity?: T;
+        price?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
