@@ -71,6 +71,7 @@ export interface Config {
     media: Media;
     categories: Category;
     authors: Author;
+    publishers: Publisher;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -82,6 +83,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     authors: AuthorsSelect<false> | AuthorsSelect<true>;
+    publishers: PublishersSelect<false> | PublishersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -190,6 +192,17 @@ export interface Author {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "publishers".
+ */
+export interface Publisher {
+  id: number;
+  name: string;
+  logo?: (number | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -227,6 +240,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'authors';
         value: number | Author;
+      } | null)
+    | ({
+        relationTo: 'publishers';
+        value: number | Publisher;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -328,6 +345,16 @@ export interface CategoriesSelect<T extends boolean = true> {
  */
 export interface AuthorsSelect<T extends boolean = true> {
   fullName?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "publishers_select".
+ */
+export interface PublishersSelect<T extends boolean = true> {
+  name?: T;
+  logo?: T;
   updatedAt?: T;
   createdAt?: T;
 }
