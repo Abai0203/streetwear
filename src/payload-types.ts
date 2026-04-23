@@ -72,6 +72,8 @@ export interface Config {
     categories: Category;
     authors: Author;
     publishers: Publisher;
+    products: Product;
+    orders: Order;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -84,6 +86,8 @@ export interface Config {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     authors: AuthorsSelect<false> | AuthorsSelect<true>;
     publishers: PublishersSelect<false> | PublishersSelect<true>;
+    products: ProductsSelect<false> | ProductsSelect<true>;
+    orders: OrdersSelect<false> | OrdersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -203,6 +207,50 @@ export interface Publisher {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products".
+ */
+export interface Product {
+  id: number;
+  name: string;
+  summary: string;
+  description: string;
+  mainPhoto?: (number | null) | Media;
+  photos?: (number | Media)[] | null;
+  category?: (number | null) | Category;
+  authors?: (number | Author)[] | null;
+  publishedYear?: number | null;
+  publisher?: (number | null) | Publisher;
+  price: number;
+  salePrice?: number | null;
+  inStock?: boolean | null;
+  isPublished?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders".
+ */
+export interface Order {
+  id: number;
+  user: number | User;
+  status?: ('pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled') | null;
+  paymentMethod: 'card' | 'cash';
+  total?: number | null;
+  shippingAddress: string;
+  phone: string;
+  stripeSessionId?: string | null;
+  items: {
+    product: number | Product;
+    quantity: number;
+    price: number;
+    id?: string | null;
+  }[];
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -244,6 +292,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'publishers';
         value: number | Publisher;
+      } | null)
+    | ({
+        relationTo: 'products';
+        value: number | Product;
+      } | null)
+    | ({
+        relationTo: 'orders';
+        value: number | Order;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -355,6 +411,50 @@ export interface AuthorsSelect<T extends boolean = true> {
 export interface PublishersSelect<T extends boolean = true> {
   name?: T;
   logo?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products_select".
+ */
+export interface ProductsSelect<T extends boolean = true> {
+  name?: T;
+  summary?: T;
+  description?: T;
+  mainPhoto?: T;
+  photos?: T;
+  category?: T;
+  authors?: T;
+  publishedYear?: T;
+  publisher?: T;
+  price?: T;
+  salePrice?: T;
+  inStock?: T;
+  isPublished?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders_select".
+ */
+export interface OrdersSelect<T extends boolean = true> {
+  user?: T;
+  status?: T;
+  paymentMethod?: T;
+  total?: T;
+  shippingAddress?: T;
+  phone?: T;
+  stripeSessionId?: T;
+  items?:
+    | T
+    | {
+        product?: T;
+        quantity?: T;
+        price?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
