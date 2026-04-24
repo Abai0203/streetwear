@@ -231,18 +231,21 @@ export interface Publisher {
 export interface Product {
   id: number;
   name: string;
-  summary: string;
-  description: string;
-  mainPhoto?: (number | null) | Media;
-  photos?: (number | Media)[] | null;
-  category?: (number | null) | Category;
-  authors?: (number | Author)[] | null;
-  publishedYear?: number | null;
-  publisher?: (number | null) | Publisher;
+  description?: string | null;
   price: number;
-  salePrice?: number | null;
+  oldPrice?: number | null;
+  category: number | Category;
+  tag?: ('NEW' | 'HIT' | 'SALE') | null;
+  images?:
+    | {
+        image?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  sizes?: ('XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL' | 'ONE SIZE')[] | null;
   inStock?: boolean | null;
-  isPublished?: boolean | null;
+  rating?: number | null;
+  material?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -464,18 +467,21 @@ export interface PublishersSelect<T extends boolean = true> {
  */
 export interface ProductsSelect<T extends boolean = true> {
   name?: T;
-  summary?: T;
   description?: T;
-  mainPhoto?: T;
-  photos?: T;
-  category?: T;
-  authors?: T;
-  publishedYear?: T;
-  publisher?: T;
   price?: T;
-  salePrice?: T;
+  oldPrice?: T;
+  category?: T;
+  tag?: T;
+  images?:
+    | T
+    | {
+        image?: T;
+        id?: T;
+      };
+  sizes?: T;
   inStock?: T;
-  isPublished?: T;
+  rating?: T;
+  material?: T;
   updatedAt?: T;
   createdAt?: T;
 }

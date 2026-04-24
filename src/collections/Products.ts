@@ -1,111 +1,50 @@
 import type { CollectionConfig } from 'payload'
-
 export const Products: CollectionConfig = {
   slug: 'products',
+  admin: { useAsTitle: 'name', defaultColumns: ['name', 'price', 'category', 'tag', 'inStock'] },
   access: {
     read: () => true,
-  },
-  admin: {
-    useAsTitle: 'name',
+    create: ({ req: { user } }) => !!user,
+    update: ({ req: { user } }) => !!user,
+    delete: ({ req: { user } }) => !!user,
   },
   fields: [
-    {
-      name: 'name',
-      type: 'text',
-      required: true,
-    },
-    {
-      name: 'summary',
-      type: 'textarea',
-      required: true,
-    },
-    {
-      name: 'description',
-      type: 'textarea',
-      required: true,
-      admin: {
-        rows: 30,
-      },
-    },
-    {
-      name: 'mainPhoto',
-      type: 'upload',
-      relationTo: 'media',
-      hasMany: false,
-      admin: {
-        position: 'sidebar',
-      },
-    },
-    {
-      name: 'photos',
-      type: 'upload',
-      relationTo: 'media',
-      hasMany: true,
-    },
+    { name: 'name', label: 'Название', type: 'text', required: true },
+    { name: 'description', label: 'Описание', type: 'textarea' },
+    { name: 'price', label: 'Цена (сом)', type: 'number', required: true },
+    { name: 'oldPrice', label: 'Старая цена (сом)', type: 'number' },
     {
       name: 'category',
+      label: 'Категория',
       type: 'relationship',
       relationTo: 'categories',
-      hasMany: false,
-      admin: {
-        position: 'sidebar',
-      },
-    },
-    {
-      name: 'authors',
-      type: 'relationship',
-      relationTo: 'authors',
-      hasMany: true,
-      admin: {
-        position: 'sidebar',
-      },
-    },
-    {
-      name: 'publishedYear',
-      type: 'number',
-      admin: {
-        position: 'sidebar',
-      },
-    },
-    {
-      name: 'publisher',
-      type: 'relationship',
-      relationTo: 'publishers',
-      hasMany: false,
-      admin: {
-        position: 'sidebar',
-      },
-    },
-    {
-      name: 'price',
-      type: 'number',
       required: true,
-      admin: {
-        position: 'sidebar',
-      },
     },
     {
-      name: 'salePrice',
-      type: 'number',
-      admin: {
-        position: 'sidebar',
-      },
+      name: 'tag',
+      label: 'Тэг',
+      type: 'select',
+      options: [
+        { label: 'Новинка', value: 'NEW' },
+        { label: 'Хит', value: 'HIT' },
+        { label: 'Скидка', value: 'SALE' },
+      ],
     },
     {
-      name: 'inStock',
-      type: 'checkbox',
-      defaultValue: true,
-      admin: {
-        position: 'sidebar',
-      },
+      name: 'images',
+      label: 'Фотографии',
+      type: 'array',
+      fields: [{ name: 'image', type: 'upload', relationTo: 'media' }],
     },
     {
-      name: 'isPublished',
-      type: 'checkbox',
-      defaultValue: false,
-      admin: {
-        position: 'sidebar',
-      },
+      name: 'sizes',
+      label: 'Размеры',
+      type: 'select',
+      hasMany: true,
+      options: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'ONE SIZE'].map((v) => ({ label: v, value: v })),
     },
+    { name: 'inStock', label: 'В наличии', type: 'checkbox', defaultValue: true },
+    { name: 'rating', label: 'Рейтинг (1-5)', type: 'number', min: 1, max: 5, defaultValue: 5 },
+    { name: 'material', label: 'Состав', type: 'text' },
   ],
 }
