@@ -1,136 +1,68 @@
 import type { CollectionConfig } from 'payload'
-import type { Product } from '../payload-types'
-
-type OrderItem = {
-  product: string | number
-  quantity: number
-  price: number
-}
-
 export const Orders: CollectionConfig = {
   slug: 'orders',
+  admin: {
+    useAsTitle: 'orderNumber',
+    defaultColumns: ['orderNumber', 'status', 'total', 'createdAt'],
+  },
+  access: {
+    read: ({ req: { user } }) => !!user,
+    create: () => true,
+    update: ({ req: { user } }) => !!user,
+    delete: ({ req: { user } }) => !!user,
+  },
+  fields: [
+    { name: 'orderNumber', label: 'Номер заказа', type: 'text' },
+    { name: 'customer', label: 'Покупатель', type: 'relationship', relationTo: 'users' },
+    {
+      name: 'items',
+      label: 'Товары',
+      type: 'array',
+      fields: [
+        { name: 'product', type: 'relationship', relationTo: 'products' },
+        { name: 'qty', label: 'Кол-во', type: 'number' },
+        { name: 'size', label: 'Размер', type: 'text' },
+        { name: 'price', label: 'Цена', type: 'number' },
+      ],
+    },
+    { name: 'total', label: 'Итого (сом)', type: 'number' },
+    {
+      name: 'status',
+      label: 'Статус',
+      type: 'select',
+      defaultValue: 'pending',
+      options: [
+        { label: '⏳ Новый', value: 'pending' },
+        { label: '✅ Подтверждён', value: 'confirmed' },
+        { label: '📦 Отправлен', value: 'shipped' },
+        { label: '🚀 Доставлен', value: 'delivered' },
+        { label: '❌ Отменён', value: 'cancelled' },
+      ],
+    },
+    { name: 'phone', label: 'Телефон', type: 'text' },
+    { name: 'address', label: 'Адрес', type: 'text' },
+    { name: 'city', label: 'Город', type: 'text' },
+    {
+      name: 'paymentMethod',
+      label: 'Способ оплаты',
+      type: 'select',
+      options: [
+        { label: 'Наличными', value: 'cash' },
+        { label: 'Карта', value: 'card' },
+        { label: 'MBANK', value: 'mbank' },
+        { label: 'O!Money', value: 'omoney' },
+      ],
+    },
+    { name: 'comment', label: 'Комментарий', type: 'textarea' },
+  ],
   hooks: {
     beforeChange: [
-      async ({ data, req }) => {
-        if (data.items?.length) {
-          const items = await Promise.all(
-            data.items.map(async (item: { product: string; quantity: number; price: number }) => {
-              const book = (await req.payload.findByID({
-                collection: 'products',
-                id: item.product,
-              })) as Product
-
-              return {
-                ...item,
-                price: book.price,
-              }
-            }),
-          )
-          data.items = items
-          data.total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-        }
+      ({ data, operation }) => {
+        if (operation === 'create' && !data.orderNumber)
+          data.orderNumber = `STR-${Date.now().toString().slice(-6)}`
         return data
       },
     ],
   },
-  access: {
-    read: ({ req: { user } }) => {
-      if (user?.role === 'admin') return true
-      return { user: { equals: user?.id } }
-    },
-    create: ({ req: { user } }) => !!user,
-  },
-  admin: {
-    useAsTitle: 'id',
-  },
-  fields: [
-    {
-      type: 'row',
-      fields: [
-        {
-          name: 'user',
-          type: 'relationship',
-          relationTo: 'users',
-          hasMany: false,
-          required: true,
-        },
-        {
-          name: 'status',
-          type: 'select',
-          defaultValue: 'pending',
-          options: [
-            { label: 'Pending', value: 'pending' },
-            { label: 'Processing', value: 'processing' },
-            { label: 'Shipped', value: 'shipped' },
-            { label: 'Delivered', value: 'delivered' },
-            { label: 'Cancelled', value: 'cancelled' },
-          ],
-        },
-        {
-          name: 'paymentMethod',
-          type: 'select',
-          required: true,
-          options: [
-            { label: 'Card', value: 'card' },
-            { label: 'Cash', value: 'cash' },
-          ],
-        },
-        {
-          name: 'total',
-          type: 'number',
-        },
-      ],
-    },
-    {
-      type: 'row',
-      fields: [
-        {
-          name: 'shippingAddress',
-          type: 'text',
-          required: true,
-          admin: {
-            width: '75%',
-          },
-        },
-        {
-          name: 'phone',
-          type: 'text',
-          required: true,
-        },
-      ],
-    },
-    {
-      name: 'stripeSessionId',
-      type: 'text',
-    },
-    {
-      name: 'items',
-      type: 'array',
-      minRows: 1,
-      required: true,
-      fields: [
-        {
-          type: 'row',
-          fields: [
-            {
-              name: 'product',
-              type: 'relationship',
-              relationTo: 'products',
-              required: true,
-            },
-            {
-              name: 'quantity',
-              type: 'number',
-              required: true,
-            },
-            {
-              name: 'price',
-              type: 'number',
-              required: true,
-            },
-          ],
-        },
-      ],
-    },
-  ],
+  timestamps: true,
 }

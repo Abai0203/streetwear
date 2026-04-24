@@ -255,19 +255,24 @@ export interface Product {
  */
 export interface Order {
   id: number;
-  user: number | User;
-  status?: ('pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled') | null;
-  paymentMethod: 'card' | 'cash';
+  orderNumber?: string | null;
+  customer?: (number | null) | User;
+  items?:
+    | {
+        product?: (number | null) | Product;
+        qty?: number | null;
+        size?: string | null;
+        price?: number | null;
+        id?: string | null;
+      }[]
+    | null;
   total?: number | null;
-  shippingAddress: string;
-  phone: string;
-  stripeSessionId?: string | null;
-  items: {
-    product: number | Product;
-    quantity: number;
-    price: number;
-    id?: string | null;
-  }[];
+  status?: ('pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled') | null;
+  phone?: string | null;
+  address?: string | null;
+  city?: string | null;
+  paymentMethod?: ('cash' | 'card' | 'mbank' | 'omoney') | null;
+  comment?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -490,21 +495,24 @@ export interface ProductsSelect<T extends boolean = true> {
  * via the `definition` "orders_select".
  */
 export interface OrdersSelect<T extends boolean = true> {
-  user?: T;
-  status?: T;
-  paymentMethod?: T;
-  total?: T;
-  shippingAddress?: T;
-  phone?: T;
-  stripeSessionId?: T;
+  orderNumber?: T;
+  customer?: T;
   items?:
     | T
     | {
         product?: T;
-        quantity?: T;
+        qty?: T;
+        size?: T;
         price?: T;
         id?: T;
       };
+  total?: T;
+  status?: T;
+  phone?: T;
+  address?: T;
+  city?: T;
+  paymentMethod?: T;
+  comment?: T;
   updatedAt?: T;
   createdAt?: T;
 }
