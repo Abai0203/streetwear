@@ -37,9 +37,8 @@ export default function ProductPage() {
   const [error, setError] = useState(false)
 
   const [size, setSize] = useState<string | null>(null)
-  const [qty, setQty] = useState(1)
-  const [tab, setTab] = useState('desc')
-  const [imgIdx, setImgIdx] = useState(0)
+  const [qty] = useState(1)
+  const [imgIdx] = useState(0)
   const [mob, setMob] = useState(false)
 
   // mobile check
@@ -50,7 +49,7 @@ export default function ProductPage() {
     return () => window.removeEventListener('resize', check)
   }, [])
 
-  // ─── FETCH PRODUCT (FIXED PAYLOAD WAY) ─────────────────────
+  // FETCH PRODUCT
   useEffect(() => {
     const id = params?.id
     if (!id) return
@@ -77,7 +76,7 @@ export default function ProductPage() {
       })
   }, [params?.id])
 
-  // ─── LOADING ───────────────────────────────────────────────
+  // LOADING
   if (loading) {
     return (
       <div className="max-w-[1100px] mx-auto sp">
@@ -94,7 +93,7 @@ export default function ProductPage() {
     )
   }
 
-  // ─── ERROR ───────────────────────────────────────────────
+  // ERROR
   if (error || !product) {
     return (
       <div className="text-center py-20 px-5">
@@ -107,13 +106,11 @@ export default function ProductPage() {
     )
   }
 
-  // ─── DATA ───────────────────────────────────────────────
   const p = product
   const isFav = favorites.includes(p.id)
 
   const imgUrl = p.images?.[imgIdx]?.image?.url
   const cat = typeof p.category === 'object' ? p.category.name : p.category
-  const disc = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0
 
   const handleAdd = () => {
     addToCart(
@@ -171,6 +168,36 @@ export default function ProductPage() {
           <h1 className="font-bebas text-[42px] mb-3">{p.name}</h1>
 
           <div className="text-[32px] font-bebas mb-4">{p.price.toLocaleString()} сом</div>
+
+          {/* РАЗМЕРЫ (исправлено) */}
+          {p.sizes && p.sizes.length > 0 ? (
+            <div className="mb-5">
+              <p className="font-mono text-[9px] tracking-widest text-t3 mb-2">
+                РАЗМЕР {size && <span className="text-t1 ml-2 font-bold">— {size}</span>}
+              </p>
+
+              <div className="flex gap-1.5 flex-wrap">
+                {p.sizes.map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => setSize(s)}
+                    className="min-w-[42px] h-[42px] px-2 font-mono text-[11px] font-bold border-2 transition-all"
+                    style={{
+                      background: size === s ? '#ff3c00' : '#1a1a1a',
+                      borderColor: size === s ? '#ff3c00' : '#2a2a2a',
+                      color: size === s ? '#fff' : '#f0ece4',
+                    }}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <p className="mb-5 font-mono text-[10px] text-t3 tracking-widest">
+              ⚠ Добавь размеры в админке → Products → Sizes
+            </p>
+          )}
 
           <button className="btn-p w-full mb-2" onClick={handleAdd}>
             В КОРЗИНУ
