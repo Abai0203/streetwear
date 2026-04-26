@@ -214,7 +214,7 @@ function Footer() {
           {cols.map(([title, links]) => (
             <div key={title}>
               <p className="font-mono text-[9px] tracking-[3px] text-t3 mb-2 uppercase">{title}</p>
-              {(links as readonly [string, string][]).map(([href, label]) => (
+              {links.map(([href, label]) => (
                 <div
                   key={label}
                   onClick={() => router.push(href)}
