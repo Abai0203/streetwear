@@ -6,41 +6,44 @@ export const testUser = {
   password: 'test',
 }
 
-/**
- * Seeds a test user for e2e admin tests.
- */
 export async function seedTestUser(): Promise<void> {
   const payload = await getPayload({ config })
 
-  // Delete existing test user if any
-  await payload.delete({
+  const existing = await payload.find({
     collection: 'users',
     where: {
-      email: {
-        equals: testUser.email,
-      },
+      email: { equals: testUser.email },
     },
   })
 
-  // Create fresh test user
-  await payload.create({
+  if (existing.docs.length > 0) {
+    await payload.delete({
+      collection: 'users',
+      id: existing.docs[0].id,
+    })
+  }
+
+  // 🔥 ФИКС: bypass overload Payload create (самая стабильная версия)
+  await (payload.create as any)({
     collection: 'users',
     data: testUser,
   })
 }
 
-/**
- * Cleans up test user after tests
- */
 export async function cleanupTestUser(): Promise<void> {
   const payload = await getPayload({ config })
 
-  await payload.delete({
+  const existing = await payload.find({
     collection: 'users',
     where: {
-      email: {
-        equals: testUser.email,
-      },
+      email: { equals: testUser.email },
     },
   })
+
+  if (existing.docs.length > 0) {
+    await payload.delete({
+      collection: 'users',
+      id: existing.docs[0].id,
+    })
+  }
 }
