@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import ProductCard from '@/components/ProductCard'
 import { getProducts, getCategories, type Product, type Category } from '@/lib/api'
 
-const ICONS = ['👖', '👗', '🧥', '👕', '🧣', '👜']
+const ICONS = ['', '', '', '', '', '']
 const FB_CATS = [
   { id: '1', name: 'Джинсы', slug: 'jeans' },
   { id: '2', name: 'Штаны', slug: 'pants' },
