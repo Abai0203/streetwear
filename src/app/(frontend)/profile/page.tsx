@@ -219,6 +219,18 @@ export default function ProfilePage() {
         )}
       </div>
 
+      {/* Быстрые ссылки */}
+      <div className="mb-8">
+        <p className="font-mono text-[10px] tracking-[3px] text-t3 mb-4">БЫСТРЫЕ ССЫЛКИ</p>
+        <div
+          className="flex items-center gap-3 p-4 bg-card border border-brd cursor-pointer hover:border-acc/50 transition-colors"
+          onClick={() => router.push('/orders')}
+        >
+          <span className="text-xl">📋</span>
+          <span className="font-bebas tracking-[2px] text-[18px]">Мои заказы</span>
+        </div>
+      </div>
+
       <button className="btn-o border-acc/30 text-acc" onClick={handleLogout}>
         ВЫЙТИ ИЗ АККАУНТА
       </button>
