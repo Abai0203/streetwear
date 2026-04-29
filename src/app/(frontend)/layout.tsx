@@ -30,6 +30,7 @@ const SB = [
   { icon: '◉', label: 'Отзывы', href: '/reviews' },
   { icon: '◈', label: 'Контакты', href: '/contacts' },
   { icon: '?', label: 'FAQ', href: '/faq' },
+  { icon: '📋', label: 'Мои заказы', href: '/orders' },
 ]
 
 function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
