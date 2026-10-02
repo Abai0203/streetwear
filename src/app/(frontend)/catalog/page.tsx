@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import ProductCard from '@/components/ProductCard'
 import { getProducts, getCategories, type Product, type Category } from '@/lib/api'
 
-export default function CatalogPage() {
+function CatalogContent() {
   const params = useSearchParams()
 
   const [products, setProducts] = useState<Product[]>([])
@@ -180,5 +180,13 @@ export default function CatalogPage() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function CatalogPage() {
+  return (
+    <Suspense fallback={<div>Загрузка...</div>}>
+      <CatalogContent />
+    </Suspense>
   )
 }
